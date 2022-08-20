@@ -104,4 +104,8 @@ contract Dictatorship is Ownable {
     function deleteFlowFromContract(ISuperfluidToken token, uint256 id) external {
         cfaV1.deleteFlow(address(this), maintainers[id], token);
     }
+
+    function makeOneTimePayment(ISuperToken token, address receiver, uint amount) external onlyOwner {
+        token.transferFrom(address(this), receiver, amount);
+    }
 }

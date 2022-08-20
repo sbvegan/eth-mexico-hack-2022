@@ -221,4 +221,5 @@ describe("Dictatorship", function () {
     expect(receiverContractFlowRate, "0");
   });
 
+
 });
