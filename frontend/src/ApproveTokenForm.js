@@ -22,7 +22,7 @@ export default function ApproveTokenForm (props) {
           onChange={e => handleApproveTokenAmount(e.target.value)} value={props.approveTokenAmount}/>
         <input 
           type="submit" 
-          value="approve-tokens"
+          value="Approve Tokens"
           onClick={approveTokenHelper}
         />
         </div>

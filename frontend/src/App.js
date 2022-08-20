@@ -6,6 +6,12 @@ import WalletConnectProvider from '@walletconnect/web3-provider'
 import ApproveTokenForm from "./ApproveTokenForm"
 
 import './index.css';
+import CreateDictatorshipButton from './CreateDictatorshipButton';
+import DepositTokenForm from './DepositTokensForm';
+import CreateMaintainerForm from './CreateMaintainerForm';
+import CreateFlowToMaintainerForm from './CreateFlowToMaintainerForm';
+import DeleteFlowToMaintainerForm from './DeleteFlowToMaintainerForm';
+import MakeOneTimePayment from './MakeOneTimePayment';
 
 function App() {
 
@@ -14,6 +20,13 @@ function App() {
   const [provider, setProvider] = useState(undefined);
 
   const [approveTokenAmount, setApproveTokenAmount] = useState(0);
+  const [depositTokenAmount, setDepositTokenAmount] = useState(0);
+  const [maintainerAddress, setMaintainerAddress] = useState("");
+  const [maintainerId, setMaintainerId] = useState(0)
+  const [deleteMaintainerId, setDeleteMaintainerId] = useState(0)
+  const [flowRate, setFlowRate] = useState(0)
+  const [receiverAddress, setReceieverAddress] = useState("")
+  const [oneTimePaymentAmount, setOneTimePaymentAmount] = useState(0)
 
   useEffect(() => {
     const providerOptions = {
@@ -66,15 +79,47 @@ function App() {
         <p>
           Dictator's Address: {address}
         </p>
-        <button>Create Dictatorship</button>
-        <br/><br/>
         
-        {/* approve tokens */}
-        
+        <CreateDictatorshipButton />
+        <br/>
 
         <ApproveTokenForm
           setApproveTokenAmount={setApproveTokenAmount}
           approveTokenAmount={approveTokenAmount}
+        />
+        <br />
+
+        <DepositTokenForm 
+          setDepositTokenAmount={setDepositTokenAmount}
+          depositTokenAmount={depositTokenAmount}
+        />
+        <br />
+
+        <CreateMaintainerForm 
+          maintainerAddress={maintainerAddress}
+          setMaintainerAddress={setMaintainerAddress}
+        />
+        <br />
+
+        <CreateFlowToMaintainerForm 
+          maintainerId={maintainerId}
+          setMaintainerId={setMaintainerId}
+          flowRate={flowRate}
+          setFlowRate={setFlowRate}
+        />
+        <br />
+
+        <DeleteFlowToMaintainerForm 
+          maintainerId={deleteMaintainerId}
+          setMaintainerId={setDeleteMaintainerId}
+        />
+        <br />
+
+        <MakeOneTimePayment 
+          receiverAddress={receiverAddress}
+          setReceieverAddress={setReceieverAddress}
+          oneTimePaymentAmount={oneTimePaymentAmount}
+          setOneTimePaymentAmount={setOneTimePaymentAmount}
         />
 
 
