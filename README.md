@@ -14,7 +14,7 @@
     - [X] testnet
 - [ ] A dictator should be able to pay and stop paying maintainers with a Superfluid CFA
     - [ ] hardhat network
-    - [ ] testnet
+    - [X] testnet
 - [ ] A dictator should distribute grants with the Superfluid IDA
     - [ ] hardhat network
     - [ ] testnet

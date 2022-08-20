@@ -68,12 +68,40 @@ contract Dictatorship is Ownable {
         maintainers[_id] = address(0);
     }
 
+    /**
+     * @notice Allows anyone to deposit SuperTokens into the contract.
+     * @param token The SuperToken being deposited into the contract.
+     * @param amount The amount of the SuperToken being deposited.
+     */
     function depositSuperTokens(ISuperToken token, uint amount) external {
         token.transferFrom(msg.sender, address(this), amount);
     }
 
+    /**
+     * @notice Allow the dictator (owner) to withdraw the super tokens
+     * @param token The SuperToken being withdrawn from the contract.
+     * @param amount The amount of the SuperToken being withdrawn.
+     */
     function withdrawFunds(ISuperToken token, uint amount) external onlyOwner {
         token.transfer(msg.sender, amount);
     }
 
+    /**
+     * @notice Allows the owner to open a CFA to an account.
+     * @param token The SuperToken being streamed.
+     * @param id The maintainer id of the token stream.
+     * @param flowRate The rate in which the token is streamed.
+     */
+    function createFlowFromContract(ISuperfluidToken token, uint256 id, int96 flowRate) external onlyOwner {
+        cfaV1.createFlow(maintainers[id], token, flowRate);
+    }
+
+    /**
+     * @notice Allows the owner to close a CFA to an account.
+     * @param token The SuperToken being streamed.
+     * @param id The id of the token stream.
+     */
+    function deleteFlowFromContract(ISuperfluidToken token, uint256 id) external {
+        cfaV1.deleteFlow(address(this), maintainers[id], token);
+    }
 }
