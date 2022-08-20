@@ -93,7 +93,7 @@ before(async function () {
 beforeEach(async function () {
   console.log("Deploying contract...")
   const Dictatorship = await ethers.getContractFactory("Dictatorship", dictator);   
-  dictatorship = await Dictatorship.deploy();
+  dictatorship = await Dictatorship.deploy(sf.settings.config.hostAddress);
   await dictatorship.deployed();
   console.log("Deployed.")
   console.log(LOG_LINE)
@@ -130,7 +130,7 @@ beforeEach(async function () {
     await maintainer2DaixUpgradeOperation.exec(maintainer2);
 })
 
-describe("Dictatorship", function () {
+describe("Dictatorship - Manage Maintainers", function () {
   
   describe("Maintainers", function () {
     it("Should create one maintainer", async function () {
@@ -168,3 +168,51 @@ describe("Dictatorship", function () {
   });
 
 });
+
+describe("Dictatorship - Manage CFA", function() {
+  it("should deposit fDAIx into the contract", async function() {
+
+    let daixApproveOperation = daix.approve({receiver: dictatorship.address, amount: ethers.utils.parseEther("100")});
+    await daixApproveOperation.exec(dictator);
+    await dictatorship.connect(dictator).depositSuperTokens(daix.address, ethers.utils.parseEther("100"));
+
+    let contractDAIxBalance = await daix.balanceOf({account: dictatorship.address, providerOrSigner: dictator});
+    expect(contractDAIxBalance, ethers.utils.parseEther("100"));
+  });
+
+  it("should be able to withdraw fDAIx from the contract", async function () {
+    let daixApproveOperation = daix.approve({receiver: dictatorship.address, amount: ethers.utils.parseEther("100")});
+    await daixApproveOperation.exec(dictator);
+    await dictatorship.connect(dictator).depositSuperTokens(daix.address, ethers.utils.parseEther("100"));
+    let contractStartingBalance = await daix.balanceOf({account: dictatorship.address, providerOrSigner: dictator});
+    await dictatorship.withdrawFunds(daix.address, ethers.utils.parseEther("1"));
+    let contractFinishingBalance = await daix.balanceOf({account: dictatorship.address, providerOrSigner: dictator});
+    expect(Number(contractStartingBalance) - 1, contractFinishingBalance)
+  });
+
+  // it("Contract sends funds #2 - creating a flow from the contract", async function () {
+  //     await moneyRouter.createFlowFromContract(daix.address, account1.address, "100000000000000"); //about 250 per month
+      
+  //     let receiverContractFlowRate = await sf.cfaV1.getFlow({
+  //       superToken: daix.address,
+  //       sender: account1.address,
+  //       receiver: moneyRouter.address,
+  //       providerOrSigner: owner
+  //   });
+
+  //   expect(receiverContractFlowRate, "100000000000000");
+  // });
+
+  // it("Contract sends funds #3 - deleting a flow from the contract", async function () {
+  //   await moneyRouter.deleteFlowFromContract(daix.address, account1.address); //about 500 per month
+    
+  //   let receiverContractFlowRate = await sf.cfaV1.getFlow({
+  //       superToken: daix.address,
+  //       sender: account1.address,
+  //       receiver: moneyRouter.address,
+  //       providerOrSigner: owner
+  //   });
+
+  //   expect(receiverContractFlowRate, "0");
+  // });
+})
