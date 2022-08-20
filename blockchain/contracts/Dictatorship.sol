@@ -15,7 +15,7 @@ contract Dictatorship is Ownable {
     uint256 public maintainerId;
     mapping (uint256 => address) maintainers;
 
-        constructor(ISuperfluid host) {
+    constructor(ISuperfluid host) {
 
         assert(address(host) != address(0));
 
