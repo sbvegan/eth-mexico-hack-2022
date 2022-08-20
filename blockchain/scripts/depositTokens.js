@@ -7,7 +7,7 @@ const DictatorshipABI = require("../artifacts/contracts/Dictatorship.sol/Dictato
 
 // $ yarn hardhat run scripts/depositTokens.js --network goerli
 async function main() {
-  const dictatorshipAddress = "0xA1e52F22211f53946feDd43a4287Bc47d3B5b376";
+  const dictatorshipAddress = "0x3D29250e34fE937DcC0d3d242Dd1fb12b81Cc9C7";
 
   const provider = new hre.ethers.providers.JsonRpcProvider(process.env.GOERLI_URL);
 
@@ -21,12 +21,11 @@ async function main() {
   const daix = await sf.loadSuperToken("fDAIx");
   const amount = "1000"
   //call money router send lump sum method from signers[0]
-  await dictatorship.connect(signers[0]).depositSuperTokens(daix.address, ethers.utils.parseEther(amount)).then(function (tx) {
-    console.log(`
-        You sent ${amount} to the contract. 
-        Tx Hash: ${tx.hash}
-    `)
-  })
+  const tx = await dictatorship.connect(signers[0]).depositSuperTokens(daix.address, ethers.utils.parseEther(amount))
+  console.log(`
+    ${amount} fDAIx is being deposited
+    tx hash: ${tx.hash}
+  `)
 }
 
 main().catch((error) => {

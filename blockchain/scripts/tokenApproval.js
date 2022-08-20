@@ -7,7 +7,7 @@ const DictatorshipABI = require("../artifacts/contracts/Dictatorship.sol/Dictato
 
 //$ yarn hardhat run scripts/tokenApproval.js --network goerli
 async function main() {
-  const dictatorshipAddress = "0xA1e52F22211f53946feDd43a4287Bc47d3B5b376";
+  const dictatorshipAddress = "0x3D29250e34fE937DcC0d3d242Dd1fb12b81Cc9C7";
 
   const provider = new hre.ethers.providers.JsonRpcProvider(process.env.GOERLI_URL);
 
@@ -28,12 +28,8 @@ async function main() {
       amount: ethers.utils.parseEther(amount)
   });
 
-  await dictatorshipApproval.exec(signers[0]).then(function (tx) {
-    console.log(`
-        Approved the contract for ${amount}. 
-        Tx Hash: ${tx.hash}
-    `)
-  });
+  const tx = await dictatorshipApproval.exec(signers[0])
+  console.log(tx.hash)
 
 }
 

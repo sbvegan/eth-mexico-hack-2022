@@ -9,6 +9,14 @@ import {IConstantFlowAgreementV1} from "@superfluid-finance/ethereum-contracts/c
 import {CFAv1Library} from "@superfluid-finance/ethereum-contracts/contracts/apps/CFAv1Library.sol";
 
 contract Dictatorship is Ownable {
+    // need to read more on emitting events first...
+    // event MaintainerCreated(address indexed maintainer, uint indexed id);
+    // event MaintainerRevoked(uint indexed id);
+    // event DepoistMade(address indexed sender, ISuperToken token, uint amount);
+    // event WithdrawMade(address indexed receiver, ISuperToken token, uint amount);
+    // event CFACreated(ISuperfluidToken indexed token, uint256 indexed id, int96 indexed flowRate);
+    // event CFADeleted(ISuperfluidToken indexed token, uint256 indexed id);
+
     using CFAv1Library for CFAv1Library.InitData;
     CFAv1Library.InitData public cfaV1; //initialize cfaV1 variable
 
@@ -51,13 +59,11 @@ contract Dictatorship is Ownable {
     /**
      * @notice Allows the dictator(owner) to create maintainer.
      * @param _maintainer the address of the maintainer
-     * @return id the new maintainer's id
      */
-    function createMaintainer(address _maintainer) external onlyOwner returns(uint256)  {
+    function createMaintainer(address _maintainer) external onlyOwner  {
         uint256 id = maintainerId;
         maintainers[id] = _maintainer;
         maintainerId++;
-        return id;
     }
 
     /**

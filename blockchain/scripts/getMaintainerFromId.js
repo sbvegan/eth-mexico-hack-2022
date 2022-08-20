@@ -4,21 +4,20 @@ const { ethers } = require("hardhat");
 require("dotenv").config();
 const DictatorshipABI = require("../artifacts/contracts/Dictatorship.sol/Dictatorship.json").abi;
 
-// $ yarn hardhat run scripts/createMaintainer.js --network goerli
+// $ yarn hardhat run scripts/getMaintainerFromId.s --network goerli
 async function main() {
-    const dictatorshipAddress = "0x3D29250e34fE937DcC0d3d242Dd1fb12b81Cc9C7";
-    const account2 = "0xa5e9E3E21E6c3b59c1dE5c8d6F9F8cebb7a24BE1";
+    const dictatorshipAddress = "0x6D030b8eEa90e82A9992BD6C73baFD72a1C15802";
+    const id = 0; // this should be account 2, if createMaintainer.js was run with it's address
 
     const provider = new hre.ethers.providers.JsonRpcProvider(process.env.GOERLI_URL);
 
     const signers = await hre.ethers.getSigners();
     const dictatorship = new ethers.Contract(dictatorshipAddress, DictatorshipABI, provider);
     //call money router send lump sum method from signers[0]
-    const tx = await dictatorship.connect(signers[0]).createMaintainer(account2)
-    console.log(`
-        address: ${account2} is being added as a maintainer
-        tx hash: ${tx.hash}
-    `)
+    const tx = await dictatorship.connect(signers[0]).getMaintainerFromId(id);
+    console.log(tx)
+    console.log(tx.logs)
+    await tx.wait(1)
 }
 
 main().catch((error) => {

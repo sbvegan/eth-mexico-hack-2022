@@ -19,7 +19,7 @@ async function main() {
   await dictatorship.deployed();
 
   console.log("Dictatorship deployed to:", dictatorship.address);
-  // 0xA1e52F22211f53946feDd43a4287Bc47d3B5b376
+  // 0x3D29250e34fE937DcC0d3d242Dd1fb12b81Cc9C7
 }
 
 main().catch((error) => {
