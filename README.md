@@ -1,22 +1,13 @@
 # ETHMexico Hack - DictatorDAO
 
-## TODO
+Dictator DAO is an experiment with an authoritarian DAO structure, inspired by open source [BDFLs](https://en.wikipedia.org/wiki/Benevolent_dictator_for_life). The current DAO model with _democracatic_ governance proposals can be strong armed by rich individuals who can purchase voting tokens. The DD approach ensures the best DAOs best interests are in mind; however, it puts a lot of faith in the leader.
 
-- [ ] A user should be able to connect to the dapp - Walletconnect
-- [ ] A user should be able to create a dictatorship
-- [ ] A user should be able to deposit and withdraw SuperTokens to the dictatorship
-    - [X] hardhat network
-    - [X] testnet
-    - [ ] UI
-- [ ] A dictator should be able to add and delete maintainers to the dictatorship
-    - [X] hardhat network
-    - [X] testnet
-    - [ ] UI
-- [ ] A dictator should be able to pay and stop paying maintainers with a Superfluid CFA
-    - [X] hardhat network
-    - [X] testnet
-    - [ ] UI
-- [ ] A dictator should distribute grants with onetime payments
-    - [X] hardhat network
-    - [ ] testnet
-    - [ ] UI
+It also improves the autonomy of DAOs by creating a programatic way to pay maintainers of the organization and make on time payments to contributors.
+
+## Sponsor Tech Used
+
+- [Superfluid](https://docs.superfluid.finance/superfluid/)
+    - CFAs
+    - SuperTokens
+- [Walletconnect](https://docs.walletconnect.com/)
+    - Web3Modal
