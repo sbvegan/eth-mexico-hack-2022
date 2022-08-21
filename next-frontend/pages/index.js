@@ -49,7 +49,8 @@ export default function Home() {
   const [flowToMaintainerId, setFlowToMaintainerId] = useState(0)
   const [flowRate, setFlowRate] = useState(385802469135802)
   const [flowDeleteMaintainerId, setFlowDeleteMaintainerId] = useState()
-
+  const [oneTimePaymentAddress, setOneTimePaymentAddress] = useState("")
+  const [oneTimePaymentAmount, setOneTimePaymentAmount] = useState(0)
   useEffect(() => {
     if (typeof window.ethereum !== "undefined") {
       setHasMetamask(true);
@@ -138,8 +139,25 @@ export default function Home() {
       try {
         setLoading(true)
         const fdaix = await sf.loadSuperToken("fDAIx");
-        const rate = String(flowRate)
         const tx = await contract.deleteFlowFromContract(fdaix.address, flowDeleteMaintainerId)
+        setTxHash(tx)
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log("Please install MetaMask");
+    }
+    setLoading(false)
+  }
+
+  async function makeOTP() {
+    if (typeof window.ethereum !== "undefined") {
+      const contract = new ethers.Contract(dictatorshipAddress, dictatorshipAbi, signer);
+      try {
+        setLoading(true)
+        const fdaix = await sf.loadSuperToken("fDAIx");
+        const amount = String(oneTimePaymentAmount)
+        const tx = await contract.makeOneTimePayment(fdaix.address, oneTimePaymentAddress, ethers.utils.parseEther(amount));
         setTxHash(tx)
       } catch (error) {
         console.log(error);
@@ -250,6 +268,22 @@ export default function Home() {
             value="Delete Flow"
             onClick={deleteFlow}
           />
+        </div>
+
+        <div>
+          <label>Make One Time Payment to: </label>
+          <input 
+            type="string" 
+            onChange={e => setOneTimePaymentAddress(e.target.value)} value={oneTimePaymentAddress}/>
+          <input
+              type="number"
+              onChange={e => setOneTimePaymentAmount(e.target.value)} value={oneTimePaymentAmount}/>
+          <input
+            type="submit"
+            value="OTP"
+            onClick={makeOTP}
+          />
+            
         </div>
       </div>
 
