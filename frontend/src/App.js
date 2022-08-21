@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+import { Framework } from "@superfluid-finance/sdk-core";
 import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 import {ethers} from "ethers"
@@ -7,18 +8,23 @@ import {ethers} from "ethers"
 import ApproveTokenForm from "./ApproveTokenForm"
 
 import './index.css';
-import CreateDictatorshipButton from './CreateDictatorshipButton';
+// import CreateDictatorshipButton from './CreateDictatorshipButton';
 import DepositTokenForm from './DepositTokensForm';
 import CreateMaintainerForm from './CreateMaintainerForm';
 import CreateFlowToMaintainerForm from './CreateFlowToMaintainerForm';
 import DeleteFlowToMaintainerForm from './DeleteFlowToMaintainerForm';
 import MakeOneTimePayment from './MakeOneTimePayment';
 
+const dictatorshipAddress = "0x3D29250e34fE937DcC0d3d242Dd1fb12b81Cc9C7"
+const dictatorshipABI = require("./Dictatorship.json").abi;
+
+
 function App() {
 
   const [web3Modal, setWeb3Modal] = useState(null)
   const [address, setAddress] = useState("");
   const [provider, setProvider] = useState(undefined);
+  const [sf, setSf] = useState() // Superfluid
 
   const [approveTokenAmount, setApproveTokenAmount] = useState(0);
   const [depositTokenAmount, setDepositTokenAmount] = useState(0);
@@ -53,8 +59,13 @@ function App() {
     const instance = await web3Modal.connect(); 
     const provider = new ethers.providers.Web3Provider(instance);
     console.log(provider)
+    const sf = await Framework.create({
+      chainId: 5,
+      provider: provider
+    })
     setProvider(provider)
     setAddress(provider.provider.accounts[0])
+    setSf(sf)
   }
 
   function resetConnection() {
@@ -62,8 +73,6 @@ function App() {
     setAddress("");
     setProvider(undefined);
   }
-
-  
 
   return (
     <div>
@@ -82,12 +91,16 @@ function App() {
           Dictator's Address: {address}
         </p>
         
-        <CreateDictatorshipButton 
+        {/* <CreateDictatorshipButton 
           provider={provider}
         />
-        <br/>
+        <br/> */}
 
         <ApproveTokenForm
+          sf={sf}
+          dictatorshipAddress={dictatorshipAddress}
+          dictatorshipABI={dictatorshipABI}
+          provider={provider}
           setApproveTokenAmount={setApproveTokenAmount}
           approveTokenAmount={approveTokenAmount}
         />
