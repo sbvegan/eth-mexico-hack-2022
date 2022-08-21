@@ -20,12 +20,15 @@ contract Dictatorship is Ownable {
     using CFAv1Library for CFAv1Library.InitData;
     CFAv1Library.InitData public cfaV1; //initialize cfaV1 variable
 
+    address dictator;
     uint256 public maintainerId;
     mapping (uint256 => address) maintainers;
 
-    constructor(ISuperfluid host) {
+    constructor(ISuperfluid host, address _dictator) {
 
         assert(address(host) != address(0));
+        assert(address(dictator) != address(0));    
+        dictator = _dictator;
 
         //initialize InitData struct, and set equal to cfaV1        
         cfaV1 = CFAv1Library.InitData(
@@ -60,7 +63,8 @@ contract Dictatorship is Ownable {
      * @notice Allows the dictator(owner) to create maintainer.
      * @param _maintainer the address of the maintainer
      */
-    function createMaintainer(address _maintainer) external onlyOwner  {
+    function createMaintainer(address _maintainer) external  {
+        require(msg.sender == dictator);
         uint256 id = maintainerId;
         maintainers[id] = _maintainer;
         maintainerId++;
@@ -70,7 +74,8 @@ contract Dictatorship is Ownable {
      * @notice Allows the dictator(owner) to revoke a maintainer.
      * @param _id the id of the maintainer to be removed.
      */
-    function revokeMaintainer(uint256 _id) external onlyOwner  {
+    function revokeMaintainer(uint256 _id) external  {
+        require(msg.sender == dictator);
         maintainers[_id] = address(0);
     }
 
@@ -88,7 +93,8 @@ contract Dictatorship is Ownable {
      * @param token The SuperToken being withdrawn from the contract.
      * @param amount The amount of the SuperToken being withdrawn.
      */
-    function withdrawFunds(ISuperToken token, uint amount) external onlyOwner {
+    function withdrawFunds(ISuperToken token, uint amount) external {
+        require(msg.sender == dictator);
         token.transfer(msg.sender, amount);
     }
 
@@ -98,7 +104,8 @@ contract Dictatorship is Ownable {
      * @param id The maintainer id of the token stream.
      * @param flowRate The rate in which the token is streamed.
      */
-    function createFlowFromContract(ISuperfluidToken token, uint256 id, int96 flowRate) external onlyOwner {
+    function createFlowFromContract(ISuperfluidToken token, uint256 id, int96 flowRate) external {
+        require(msg.sender == dictator);
         cfaV1.createFlow(maintainers[id], token, flowRate);
     }
 
@@ -111,7 +118,8 @@ contract Dictatorship is Ownable {
         cfaV1.deleteFlow(address(this), maintainers[id], token);
     }
 
-    function makeOneTimePayment(ISuperToken token, address receiver, uint amount) external onlyOwner {
+    function makeOneTimePayment(ISuperToken token, address receiver, uint amount) external {
+        require(msg.sender == dictator);
         token.transferFrom(address(this), receiver, amount);
     }
 }
