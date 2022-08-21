@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider'
+import {ethers} from "ethers"
 
 import ApproveTokenForm from "./ApproveTokenForm"
 
@@ -49,10 +50,11 @@ function App() {
 
   async function connectWallet() {
     console.log("connectWallet")
-    const provider = await web3Modal.connect();
+    const instance = await web3Modal.connect(); 
+    const provider = new ethers.providers.Web3Provider(instance);
     console.log(provider)
     setProvider(provider)
-    setAddress(provider.accounts[0])
+    setAddress(provider.provider.accounts[0])
   }
 
   function resetConnection() {
@@ -80,7 +82,9 @@ function App() {
           Dictator's Address: {address}
         </p>
         
-        <CreateDictatorshipButton />
+        <CreateDictatorshipButton 
+          provider={provider}
+        />
         <br/>
 
         <ApproveTokenForm
@@ -121,8 +125,6 @@ function App() {
           oneTimePaymentAmount={oneTimePaymentAmount}
           setOneTimePaymentAmount={setOneTimePaymentAmount}
         />
-
-
         
       </body>
     </div>
