@@ -39,6 +39,7 @@ export default function Home() {
 
   const [loading, setLoading] = useState(false)
   const [txHash, setTxHash] = useState("")
+  const [notification, setNotification] = useState()
 
   const [maintainerAddress, setMaintainerAddress] = useState("");
   const [maintainerCreated, setMaintainerCreated] = useState(false)
@@ -51,11 +52,17 @@ export default function Home() {
   const [flowDeleteMaintainerId, setFlowDeleteMaintainerId] = useState()
   const [oneTimePaymentAddress, setOneTimePaymentAddress] = useState("")
   const [oneTimePaymentAmount, setOneTimePaymentAmount] = useState(0)
+
+
   useEffect(() => {
     if (typeof window.ethereum !== "undefined") {
       setHasMetamask(true);
     }
   });
+
+  useEffect(() => {
+
+  }, [notification])
 
   async function connectWallet() {
     if (typeof window.ethereum !== "undefined") {
@@ -71,6 +78,7 @@ export default function Home() {
           provider
         });
         setSf(sf)
+        setNotification("Wallet connected!")
       } catch (e) {
         console.log(e);
       }
@@ -90,6 +98,12 @@ export default function Home() {
       })
       const tx = await dictatorshipApproval.exec(signer)
       setTxHash(tx.hash)
+      setNotification(
+        `
+        address: ${tokenApprovalAmount}fDAIx is being approved
+
+        tx hash: https://goerli.etherscan.io/tx/${tx.hash}
+        `)
     } else {
       console.log("Please install MetaMask");
     }
@@ -106,6 +120,12 @@ export default function Home() {
         const amount = String(tokenDepositAmount)
         const tx = await contract.depositSuperTokens(fdaix.address, ethers.utils.parseEther(amount))
         setTxHash(tx)
+        setNotification(
+          `
+          address: ${tokenApprovalAmount}fDAIx is being deposited
+
+          tx hash: https://goerli.etherscan.io/tx/${tx.hash}
+          `)
       } catch (error) {
         console.log(error);
       }
@@ -123,7 +143,16 @@ export default function Home() {
         const fdaix = await sf.loadSuperToken("fDAIx");
         const rate = String(flowRate)
         const tx = await contract.createFlowFromContract(fdaix.address, flowToMaintainerId, rate)
+        const addr = await contract.getMaintainerFromId(flowToMaintainerId)
         setTxHash(tx)
+        setNotification(
+          `
+          CFA to MaintainerId: ${flowToMaintainerId} at ${flowRate}
+
+          tx hash: https://goerli.etherscan.io/tx/${tx.hash}
+
+          SF Console: https://console.superfluid.finance/goerli/accounts/${addr}
+          `)
       } catch (error) {
         console.log(error);
       }
@@ -140,6 +169,15 @@ export default function Home() {
         setLoading(true)
         const fdaix = await sf.loadSuperToken("fDAIx");
         const tx = await contract.deleteFlowFromContract(fdaix.address, flowDeleteMaintainerId)
+        const addr = await contract.getMaintainerFromId(flowToMaintainerId)
+        setNotification(
+          `
+          CFA to MaintainerId: ${flowToMaintainerId} is being deleted
+
+          tx hash: https://goerli.etherscan.io/tx/${tx.hash}
+
+          SF Console: https://console.superfluid.finance/goerli/accounts/${addr}
+          `)
         setTxHash(tx)
       } catch (error) {
         console.log(error);
@@ -177,7 +215,12 @@ export default function Home() {
         const nextId = await contract.getMaintainerId();
         setMaintainerId(Number(nextId) - 1)
         setMaintainerCreated(true)
-        setLoading(false)
+        setNotification(
+          `
+          address: ${maintainerAddress} is being added as a maintainer as id: ${maintainerId}
+          
+          tx hash: https://goerli.etherscan.io/tx/${tx.hash}
+          `)
       } catch (error) {
         console.log(error);
       }
@@ -190,16 +233,21 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <header>
-        <h1>DICTATOR DAO</h1>
-        <button onClick={connectWallet}>Connect with Walletconnect</button>
-        {isConnected ?
-          <p>Connected.</p> :
-          <p>Not connected.</p>
-        }
-        {loading ?
-          <p>Waiting on our transactions...</p>:
-          <p></p>
-        }
+        <div>
+          <h1>DICTATOR DAO</h1>
+          <button onClick={connectWallet}>Connect with Walletconnect</button>
+          {isConnected ?
+            <p>Connected.</p> :
+            <p>Not connected.</p>
+          }
+          {loading ?
+            <p>Waiting on our transactions...</p>:
+            <p></p>
+          }
+        </div>
+        <div className='notification'>
+          {notification}
+        </div>
       </header>
       <div>
         <div>
@@ -212,10 +260,6 @@ export default function Home() {
                 value={"Add Maintainer"}
                 onClick={addMaintainer}
             />
-            {maintainerCreated ?
-              <p>The new maintainer id is: {maintainerId}</p>:
-              <p></p>
-            }
         </div>
       
         <div>
