@@ -44,7 +44,11 @@ export default function Home() {
   const [maintainerCreated, setMaintainerCreated] = useState(false)
   const [maintainerId, setMaintainerId] = useState(null)
   const [removeMaintainerId, setRemoveMaintainerId] = useState(null)
-  const [tokenApprovalAmount, setTokenApprovalAmount] = useState()
+  const [tokenApprovalAmount, setTokenApprovalAmount] = useState(0)
+  const [tokenDepositAmount, setTokenDepositAmount] = useState(0)
+  const [flowToMaintainerId, setFlowToMaintainerId] = useState(0)
+  const [flowRate, setFlowRate] = useState(385802469135802)
+  const [flowDeleteMaintainerId, setFlowDeleteMaintainerId] = useState()
 
   useEffect(() => {
     if (typeof window.ethereum !== "undefined") {
@@ -96,18 +100,55 @@ export default function Home() {
     if (typeof window.ethereum !== "undefined") {
       const contract = new ethers.Contract(dictatorshipAddress, dictatorshipAbi, signer);
       try {
-        await contract.depositSuperTokens()
+        setLoading(true)
+        const fdaix = await sf.loadSuperToken("fDAIx");
+        const amount = String(tokenDepositAmount)
+        const tx = await contract.depositSuperTokens(fdaix.address, ethers.utils.parseEther(amount))
+        setTxHash(tx)
       } catch (error) {
         console.log(error);
       }
-
     } else {
       console.log("Please install MetaMask");
     }
     setLoading(false)
   }
 
-  
+  async function createFlow() {
+    if (typeof window.ethereum !== "undefined") {
+      const contract = new ethers.Contract(dictatorshipAddress, dictatorshipAbi, signer);
+      try {
+        setLoading(true)
+        const fdaix = await sf.loadSuperToken("fDAIx");
+        const rate = String(flowRate)
+        const tx = await contract.createFlowFromContract(fdaix.address, flowToMaintainerId, rate)
+        setTxHash(tx)
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log("Please install MetaMask");
+    }
+    setLoading(false)
+  }
+
+  async function deleteFlow() {
+    if (typeof window.ethereum !== "undefined") {
+      const contract = new ethers.Contract(dictatorshipAddress, dictatorshipAbi, signer);
+      try {
+        setLoading(true)
+        const fdaix = await sf.loadSuperToken("fDAIx");
+        const rate = String(flowRate)
+        const tx = await contract.deleteFlowFromContract(fdaix.address, flowDeleteMaintainerId)
+        setTxHash(tx)
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log("Please install MetaMask");
+    }
+    setLoading(false)
+  }
 
   async function addMaintainer() {
     if (typeof window.ethereum !== "undefined") {
@@ -169,6 +210,46 @@ export default function Home() {
               value="Approve Tokens"
               onClick={approveTokens}
             />
+        </div>
+
+        <div>
+          <label>Deposit fDAIx Tokens for Dictatorship: </label>
+          <input 
+            type="number"  
+            onChange={e => setTokenDepositAmount(e.target.value)} value={tokenDepositAmount}/>
+          <input 
+            type="submit" 
+            value="Deposit Tokens"
+            onClick={depositTokens}
+          />
+        </div>
+
+        <div>
+          <label>Create CFA for Maintainer ID: </label>
+          <input 
+            type="number" 
+            onChange={e => setFlowToMaintainerId(e.target.value)} value={flowToMaintainerId}/>
+          <label> Input Flow Rate: </label>
+          <input 
+            type="number" 
+            onChange={e => setFlowRate(e.target.value)} value={flowRate}/>
+          <input 
+            type="submit" 
+            value="Create Flow"
+            onClick={createFlow}
+          />
+        </div>
+
+        <div>
+          <label>Delete CFA for Maintainer ID: </label>
+          <input 
+            type="number" 
+            onChange={e => setFlowDeleteMaintainerId(e.target.value)} value={flowDeleteMaintainerId}/>
+          <input 
+            type="submit" 
+            value="Delete Flow"
+            onClick={deleteFlow}
+          />
         </div>
       </div>
 
