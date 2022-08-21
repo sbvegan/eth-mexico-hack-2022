@@ -11,6 +11,7 @@
 - [ ] A dictator should be able to add and delete maintainers to the dictatorship
     - [X] hardhat network
     - [X] testnet
+    - [ ] UI
 - [ ] A dictator should be able to pay and stop paying maintainers with a Superfluid CFA
     - [X] hardhat network
     - [X] testnet

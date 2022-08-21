@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-const { Framework, getFlowAmountByPerSecondFlowRate } = require("@superfluid-finance/sdk-core");
+const { Framework } = require("@superfluid-finance/sdk-core");
 const { ethers } = require("hardhat");
 require("dotenv").config();
 const DictatorshipABI = require("../artifacts/contracts/Dictatorship.sol/Dictatorship.json").abi;

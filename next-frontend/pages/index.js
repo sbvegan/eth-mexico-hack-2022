@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider"
 import {dictatorshipAbi} from "../constants/dictator-abi"
+import {fDAIxAbi} from "../constants/fDAIx-abi"
+const { Framework } = require("@superfluid-finance/sdk-core");
+
 
 let web3Modal;
 const dictatorshipAddress = "0x3D29250e34fE937DcC0d3d242Dd1fb12b81Cc9C7"
@@ -32,13 +35,16 @@ export default function Home() {
   const [isConnected, setIsConnected] = useState(false);
   const [hasMetamask, setHasMetamask] = useState(false);
   const [signer, setSigner] = useState(undefined);
+  const [sf, setSf] = useState()
 
   const [loading, setLoading] = useState(false)
+  const [txHash, setTxHash] = useState("")
 
   const [maintainerAddress, setMaintainerAddress] = useState("");
   const [maintainerCreated, setMaintainerCreated] = useState(false)
   const [maintainerId, setMaintainerId] = useState(null)
-
+  const [removeMaintainerId, setRemoveMaintainerId] = useState(null)
+  const [tokenApprovalAmount, setTokenApprovalAmount] = useState()
 
   useEffect(() => {
     if (typeof window.ethereum !== "undefined") {
@@ -53,6 +59,13 @@ export default function Home() {
         setIsConnected(true);
         const provider = new ethers.providers.Web3Provider(web3ModalProvider);
         setSigner(provider.getSigner());
+
+        console.log(provider)
+        const sf = await Framework.create({
+          chainId: 5,
+          provider
+        });
+        setSf(sf)
       } catch (e) {
         console.log(e);
       }
@@ -60,6 +73,41 @@ export default function Home() {
       setIsConnected(false);
     }
   }
+
+  async function approveTokens() {
+    if (typeof window.ethereum !== "undefined") {
+      setLoading(true)
+      const fdaix = await sf.loadSuperToken("fDAIx");
+      const amount = String(tokenApprovalAmount)
+      const dictatorshipApproval = fdaix.approve({
+        receiver: dictatorshipAddress,
+        amount: ethers.utils.parseEther(amount)
+      })
+      const tx = await dictatorshipApproval.exec(signer)
+      setTxHash(tx.hash)
+    } else {
+      console.log("Please install MetaMask");
+    }
+    setLoading(false)
+  }
+
+
+  async function depositTokens() {
+    if (typeof window.ethereum !== "undefined") {
+      const contract = new ethers.Contract(dictatorshipAddress, dictatorshipAbi, signer);
+      try {
+        await contract.depositSuperTokens()
+      } catch (error) {
+        console.log(error);
+      }
+
+    } else {
+      console.log("Please install MetaMask");
+    }
+    setLoading(false)
+  }
+
+  
 
   async function addMaintainer() {
     if (typeof window.ethereum !== "undefined") {
@@ -110,7 +158,20 @@ export default function Home() {
               <p></p>
             }
         </div>
+      
+        <div>
+            <label>Approve Tokens for the Dictatorship: </label>
+            <input
+              type="number"
+              onChange={e => setTokenApprovalAmount(e.target.value)} value={tokenApprovalAmount}/>
+            <input
+              type="submit"
+              value="Approve Tokens"
+              onClick={approveTokens}
+            />
+        </div>
       </div>
+
     </div>
   )
 }
