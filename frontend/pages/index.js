@@ -47,7 +47,7 @@ export default function Home() {
   const [removeMaintainerId, setRemoveMaintainerId] = useState(null)
   const [tokenApprovalAmount, setTokenApprovalAmount] = useState(0)
   const [tokenDepositAmount, setTokenDepositAmount] = useState(0)
-  const [flowToMaintainerId, setFlowToMaintainerId] = useState(0)
+  const [flowToMaintainerId, setFlowToMaintainerId] = useState()
   const [flowRate, setFlowRate] = useState(385802469135802)
   const [flowDeleteMaintainerId, setFlowDeleteMaintainerId] = useState()
   const [oneTimePaymentAddress, setOneTimePaymentAddress] = useState("")
@@ -211,7 +211,7 @@ export default function Home() {
       const contract = new ethers.Contract(dictatorshipAddress, dictatorshipAbi, signer);
       try {
         setLoading(true)
-        await contract.createMaintainer(maintainerAddress);
+        const tx = await contract.createMaintainer(maintainerAddress);
         const nextId = await contract.getMaintainerId();
         setMaintainerId(Number(nextId) - 1)
         setMaintainerCreated(true)
